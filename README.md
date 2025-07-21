@@ -1,24 +1,51 @@
-# README
+# Webhook Rails App
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A simple Rails API application that receives webhooks and logs them.
 
-Things you may want to cover:
+## Quick Start with Docker
 
-* Ruby version
+### For Development
 
-* System dependencies
+```bash
+# Build and start the containers
+docker-compose up
 
-* Configuration
+# In another terminal, create the database
+docker-compose exec web rails db:create
+docker-compose exec web rails db:migrate
+```
 
-* Database creation
+The app will be available at http://localhost:3000
 
-* Database initialization
+### For Production (Fly.io/AWS)
 
-* How to run the test suite
+Build the production image:
+```bash
+docker build -t webhook .
+```
 
-* Services (job queues, cache servers, search engines, etc.)
+Run locally for testing:
+```bash
+docker run -p 80:80 -e RAILS_MASTER_KEY=$(cat config/master.key) webhook
+```
 
-* Deployment instructions
+## Testing the Webhook
 
-* ...
+Send a test webhook:
+```bash
+curl -X POST http://localhost:3000/webhooks \
+  -H "Content-Type: application/json" \
+  -d '{"event": "test", "data": {"message": "Hello World"}}'
+```
+
+Check the logs to see the webhook data:
+```bash
+docker-compose logs web
+```
+
+## Deployment
+
+The production Dockerfile is optimized for deployment to:
+- Fly.io: Use `fly launch` and follow the prompts
+- AWS ECS: Push the image to ECR and create a task definition
+- Any container platform that supports Docker images
