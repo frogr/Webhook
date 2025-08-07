@@ -13,16 +13,14 @@
 # gem "pg"
 #
 default: &default
-  adapter: postgresql
-  encoding: unicode
-  # For details on connection pooling, see Rails configuration guide
-  # https://guides.rubyonrails.org/configuring.html#database-pooling
+  adapter: sqlite3
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
 
 
 development:
   <<: *default
-  database: webhook_app_development
+  database: storage/development.sqlite3
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.
@@ -56,7 +54,7 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: webhook_app_test
+  database: storage/test.sqlite3
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -79,20 +77,7 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  primary: &primary_production
-    <<: *default
-    database: webhook_app_production
-    username: webhook_app
-    password: <%= ENV["WEBHOOK_APP_DATABASE_PASSWORD"] %>
-  cache:
-    <<: *primary_production
-    database: webhook_app_production_cache
-    migrations_paths: db/cache_migrate
-  queue:
-    <<: *primary_production
-    database: webhook_app_production_queue
-    migrations_paths: db/queue_migrate
-  cable:
-    <<: *primary_production
-    database: webhook_app_production_cable
-    migrations_paths: db/cable_migrate
+  adapter: sqlite3
+  database: /rails/storage/production.sqlite3
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000

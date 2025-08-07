@@ -1,6 +1,4 @@
 class WebhooksController < ApplicationController
-  skip_before_action :verify_authenticity_token
-
   def receive
     webhook_data = {
       timestamp: Time.current,
